@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <string>
 #include <fstream>
-
 using namespace std;
 
 const string RED = "\033[31m";
@@ -11,6 +10,7 @@ const string GREEN = "\033[32m";
 const string YELLOW = "\033[33m";
 const string BLUE = "\033[34m";
 const string RESET = "\033[0m";
+string Computer;
 
 void displayOptions() {
     cout << GREEN << "[1] Devices" << RESET << endl;
@@ -57,8 +57,26 @@ void displayOptions() {
     cout << GREEN << "[42] CPU State" << RESET << endl;
     cout << GREEN << "[43] Disable Kernel Execuse Load Disbaled" << RESET << endl;
     cout << GREEN << "[44] Able Kernel Execuse Load Disbaled" << RESET << endl;
+    cout << GREEN << "[45] My Partition Type (MBR or GPT)" << RESET << endl;
+    cout << GREEN << "[46] Firmware iwlwifi detalied Information" << RESET << endl;
+    cout << GREEN << "[47] Search For Specfic Firmware In PC - Laptop" << RESET << endl;
+    cout << GREEN << "[48] Check Your Partiton Type" << RESET << endl;
+    cout << GREEN << "[49] Make Valid Linux Password Like /etc/shadow passwords" << RESET << endl;
+    cout << GREEN << "[50] Min Password Length of Your Computer Firmware" << RESET << endl;
+    cout << GREEN << "[51] Max Password Length of Your Computer Firmware" << RESET << endl;
+    cout << GREEN << "[52] Secure Boot Status" << RESET << endl;
+    cout << GREEN << "[53] TPM Security Status" << RESET << endl;
+    cout << GREEN << "[54] How Many Core, Can I Use ?" << RESET << endl;
+    cout << GREEN << "[55] My Bootloader Type" << RESET << endl;
+    cout << GREEN << "[56] Virtualization Status" << RESET << endl;
+    cout << GREEN << "[57] SupportAssistOSRecovery Status" << RESET << endl;
+    cout << GREEN << "[58] Turbo Boost Status" << RESET << endl;
+    cout << GREEN << "[59] TypeCPower Status" << RESET << endl;
+    cout << GREEN << "[60] TrustExecution Status" << RESET << endl;
+    cout << GREEN << "[61] SHA256 Status" << RESET << endl;
     cout << GREEN << "[99] Exit Toolkit" << RESET << endl;
     cout << GREEN << "[100] Contact Me" << RESET << endl;
+    cout << GREEN << "[200] Toolkit Feature Upgrades" << RESET << endl;
     cout << YELLOW;
 }
 
@@ -68,7 +86,7 @@ void executeCommand(const string& cmd) {
 
 void handleInput() {
     int user_input;
-    cout << "Enter Option Number: ";
+    cout << "linuxtoolkit> ";
     cin >> user_input;
 
     switch(user_input) {
@@ -195,15 +213,19 @@ void handleInput() {
 	    cout << "~C Degree" << endl;
 	    break;
 	case 24: {
-	    cout << "Option " << user_input << " Processed..." << endl;
+	    cout << YELLOW << "Option " << user_input << " Processed..." << RESET << endl;
 	    sleep(0.7);
 	    string ledinput;
 	    string brightness;
-	    cout << "Enter LED Input Number : ";
+	    string ledtype;
+	    cout << BLUE << endl;
+	    executeCommand("ls -1 /sys/class/leds");
+	    cout << GREEN << "Enter LED (Chosse one of them): " << RESET;
 	    cin >> ledinput;
-	    cout << "Enter Brightness Number : ";
+	    cout << GREEN <<"Enter Brightness Number : " << RESET;
 	    cin >> brightness;
-	    executeCommand("/bin/echo " + brightness  +  " > /sys/class/leds/input" + ledinput + "::capslock/brightness");
+	    cout << YELLOW;
+	    executeCommand("/bin/echo " + brightness  +  " > /sys/class/leds/" + ledinput + "/brightness");
 	    break;
 	}
 	case 25:
@@ -339,6 +361,118 @@ void handleInput() {
 	    sleep(0.7);
 	    executeCommand("/bin/echo 2 > /proc/sys/kernel/kexec_load_disabled");
 	    break;
+	case 45:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /var/log/installer/syslog | grep 'Identified partition label for /dev/sda' ");
+	    break;
+	case 46:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /var/log/installer/syslog | grep 'iwlwifi' 2> /dev/null");
+	    break;
+	case 47:{
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    string firmware;
+	    cout << BLUE << "Note : If There Any Missing Important Firmware So, Install It By <apt> Installer Packages" << RESET << endl;
+	    cout << GREEN << "Enter The Firmware Name : " << RESET;
+	    cin >> firmware;
+	    cout << YELLOW << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /var/log/installer/syslog | grep 'firmware-" + firmware + "' 2> /dev/null");
+	    break;
+	}
+	case 48: {
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    string partition;
+	    cout << GREEN <<"Enter Partition Name (sda1,sda2,etc...) : " << RESET;
+	    cin >> partition;
+	    cout << YELLOW << endl;
+	    executeCommand("/bin/cat /var/log/installer/syslog | grep 'debug: /dev/" + partition + " is' 2> /dev/null");
+	    break;
+	}
+	case 49:{
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    string password;
+	    cout << GREEN << "Enter Password : " << RESET;
+	    cin >> password;
+	    if (password.size() < 7){
+	        cout << "The Password Should Be More Than 7 Characters" << endl;
+	        cout << YELLOW << endl;
+	        break;
+	    }else {
+	        cout << "Long Password" << endl;
+	    }
+	    cout << BLUE << endl;
+	    sleep(0.7);
+	    executeCommand("mkpasswd -s " + password);
+	    cout << YELLOW << endl;
+	    break;
+	}
+	case 50:{
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    cout << YELLOW << endl;
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/authentication/System/min_password_length");
+	    break;
+	}
+	case 51:{
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    cout << YELLOW << endl;
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/authentication/System/max_password_length");
+	    break;
+	}
+	case 52:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/SecureBoot/current_value");
+	    break;
+	case 53:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/TpmSecurity/current_value");
+	    break;
+	case 54:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/CpuCore/current_value");
+	    break;
+	case 55:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/BootList/current_value");
+	    break;
+	case 56:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/Virtualization/current_value");
+	    break;
+	case 57:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/SupportAssistOSRecovery/current_value");
+	    break;
+	case 58:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/TurboMode/current_value");
+	    break;
+	case 59:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/TypeCPower/current_value");
+	    break;
+	case 60:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/TrustExecution/current_value");
+	    break;
+	case 61:
+	    cout << "Option " << user_input << " Processed..." << endl;
+	    sleep(0.7);
+	    executeCommand("/bin/cat /sys/devices/virtual/firmware-attributes/" + Computer + "/attributes/SHA256/current_value");
+	    break;
         case 99:
             cout << "Exit, Bye" << endl;
 	    sleep(0.7);
@@ -347,6 +481,11 @@ void handleInput() {
 	case 100:
 	    cout << BLUE << "Contact Gmail : hamza2002gaming@gmail.com" << RESET << endl;
 	    cout << BLUE << "Github Profile : bugbounty88" << RESET << endl;
+	    cout << YELLOW << endl;
+	    break;
+	case 200:
+	    cout << BLUE << "- Fix Security Vulnerbilities" << RESET << endl;
+	    cout << BLUE << "- Add CPU Overclocking Option" << RESET << endl;
 	    cout << YELLOW << endl;
 	    break;
         default:
@@ -359,7 +498,16 @@ void handleInput() {
 int main() {
     system("/bin/clear");
     cout << BLUE << "Hello, This Is Highly Helpful Toolkit For Any Linux System (Debian, Arch, etc...),\n" << RESET << endl;
-    
+    cout << RED << endl;
+    executeCommand("ls -1 /sys/devices/virtual/firmware-attributes/");
+    cout << GREEN <<"Please, Enter The Value That By Red Color : ";
+    cin >> Computer;
+    sleep(0.7);
+    cout << GREEN << "Completed Succsesfuly." << RESET <<endl;
+    sleep(1);
+    cout << GREEN << "loading resources..." << RESET <<endl;
+    sleep(3);
+    executeCommand("/bin/clear");
     displayOptions();
     handleInput();
     
